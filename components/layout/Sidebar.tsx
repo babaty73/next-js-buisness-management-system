@@ -45,17 +45,6 @@ export default function Sidebar() {
   return (
     <aside className="fixed inset-y-0 left-0 z-40 hidden w-64 border-r border-gray-200 bg-white lg:block">
       <div className="flex h-full flex-col">
-        {/* Logo */}
-        <div className="flex h-16 items-center border-b border-gray-200 px-6">
-          <div>
-            <h1 className="text-lg font-bold text-gray-900">
-              BusinessOS
-            </h1>
-            <p className="text-xs text-gray-500">
-              Management System
-            </p>
-          </div>
-        </div>
 
         {/* Navigation */}
         <nav className="flex-1 space-y-1 p-4">

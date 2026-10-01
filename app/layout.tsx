@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-
-import Sidebar from "@/components/layout/Sidebar";
-import Header from "@/components/layout/Header";
+import AppShell from "@/components/layout/AppShell";
 
 export const metadata: Metadata = {
   title: "Business Management System",
@@ -16,14 +14,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="bg-gray-50 text-gray-900">
-        <Sidebar />
-
-        <div className="lg:pl-64">
-          <Header />
-
-          <main>{children}</main>
-        </div>
+      <body>
+        <AppShell>{children}</AppShell>
       </body>
     </html>
   );
