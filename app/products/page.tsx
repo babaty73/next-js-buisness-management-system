@@ -4,16 +4,16 @@ export default async function ProductsPage() {
   const products = await getProducts();
 
   return (
-    <main>
-      <h1>Products</h1>
+    <main className="min-h-screen p-8">
+      <h1 className="text-3xl font-bold">Products</h1>
 
       {products.length === 0 ? (
-        <p>No products found.</p>
+        <p className="mt-4">No products found.</p>
       ) : (
-        <div>
+        <div className="mt-6 space-y-4">
           {products.map((product) => (
-            <div key={product._id}>
-              <h2>{product.name}</h2>
+            <div key={product._id.toString()} className="border p-4">
+              <h2 className="font-semibold">{product.name}</h2>
               <p>{product.description}</p>
               <p>Price: {product.price}</p>
               <p>Stock: {product.stock}</p>
