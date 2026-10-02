@@ -112,9 +112,12 @@ export default async function CustomersPage() {
                       className="transition hover:bg-gray-50"
                     >
                       <td className="px-6 py-4">
-                        <p className="font-medium text-gray-900">
-                          {customer.name}
-                        </p>
+                        <Link
+                            href={`/customers/${customer._id.toString()}`}
+                            className="font-medium text-gray-900 hover:underline"
+                            >
+                            {customer.name}
+                            </Link>
                       </td>
 
                       <td className="px-6 py-4 text-gray-600">
