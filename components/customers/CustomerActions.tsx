@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { Pencil, Trash2 } from "lucide-react";
 import Link from "next/link";
 
 export default function CustomerActions({
@@ -32,7 +33,6 @@ export default function CustomerActions({
         throw new Error(data.message || "Failed to delete customer");
       }
 
-      router.push("/customers");
       router.refresh();
     } catch (error) {
       window.alert(
@@ -40,26 +40,29 @@ export default function CustomerActions({
           ? error.message
           : "Failed to delete customer"
       );
+    } finally {
       setDeleting(false);
     }
   }
 
   return (
-    <div className="flex items-center gap-3">
+    <div className="flex items-center justify-end gap-2">
       <Link
         href={`/customers/${customerId}/edit`}
-        className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50"
+        className="rounded-lg p-2 text-gray-500 transition hover:bg-gray-100 hover:text-gray-900"
+        title="Edit customer"
       >
-        Edit
+        <Pencil size={17} strokeWidth={1.8} />
       </Link>
 
       <button
         type="button"
         onClick={handleDelete}
         disabled={deleting}
-        className="rounded-lg border border-red-200 px-4 py-2 text-sm font-medium text-red-600 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
+        className="rounded-lg p-2 text-red-500 transition hover:bg-red-50 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-50"
+        title="Delete customer"
       >
-        {deleting ? "Deleting..." : "Delete"}
+        <Trash2 size={17} strokeWidth={1.8} />
       </button>
     </div>
   );

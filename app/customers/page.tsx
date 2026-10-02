@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { getCustomers } from "@/services/customerService";
-
+import CustomerActions from "@/components/customers/CustomerActions";
 export default async function CustomersPage() {
   const customers = await getCustomers();
 
@@ -102,6 +102,7 @@ export default async function CustomersPage() {
                     <th className="px-6 py-4 font-medium">Phone</th>
                     <th className="px-6 py-4 font-medium">Email</th>
                     <th className="px-6 py-4 font-medium">Address</th>
+                    <th className="px-6 py-4 text-right font-medium">Actions</th>
                   </tr>
                 </thead>
 
@@ -112,7 +113,7 @@ export default async function CustomersPage() {
                       className="transition hover:bg-gray-50"
                     >
                       <td className="px-6 py-4">
-                        <Link
+                         <Link
                             href={`/customers/${customer._id.toString()}`}
                             className="font-medium text-gray-900 hover:underline"
                             >
@@ -130,6 +131,10 @@ export default async function CustomersPage() {
 
                       <td className="px-6 py-4 text-gray-600">
                         {customer.address || "—"}
+                      </td>
+
+                      <td className="px-6 py-4">
+                        <CustomerActions customerId={customer._id.toString()} />
                       </td>
                     </tr>
                   ))}
