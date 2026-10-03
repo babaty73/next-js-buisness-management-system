@@ -1,4 +1,5 @@
 import Link from "next/link";
+import OrderActions from "@/components/orders/OrderActions";
 import { getOrders } from "@/services/orderService";
 export default async function OrdersPage() {
   const orders = await getOrders();
@@ -124,6 +125,7 @@ export default async function OrdersPage() {
                     <th className="px-6 py-4 font-medium">Total</th>
                     <th className="px-6 py-4 font-medium">Status</th>
                     <th className="px-6 py-4 font-medium">Date</th>
+                    <th className="px-6 py-4 text-right font-medium">Actions</th>
                   </tr>
                 </thead>
 
@@ -136,8 +138,8 @@ export default async function OrdersPage() {
                       <td className="px-6 py-4">
                         <p className="font-medium text-gray-900">
                          {typeof order.customer === "object"
-  ? order.customer.name
-  : "Unknown Customer"}
+                            ? order.customer.name
+                            : "Unknown Customer"}
                         </p>
                       </td>
 
@@ -168,6 +170,12 @@ export default async function OrdersPage() {
                       <td className="px-6 py-4 text-gray-600">
                         {new Date(order.createdAt).toLocaleDateString()}
                       </td>
+                      <td className="px-6 py-4">
+                        <OrderActions
+                            orderId={order._id.toString()}
+                            status={order.status}
+                        />
+                        </td>
                     </tr>
                   ))}
                 </tbody>

@@ -2,12 +2,19 @@ import { NextRequest, NextResponse } from "next/server";
 import mongoose from "mongoose";
 import { connectDB } from "@/lib/db";
 import Order from "@/models/Order";
+import Product from "@/models/Product";
 
 type RouteContext = {
   params: Promise<{ id: string }>;
 };
 
-// GET /api/orders/:id
+const allowedTransitions: Record<string, string[]> = {
+  pending: ["confirmed", "cancelled"],
+  confirmed: ["completed", "cancelled"],
+  completed: [],
+  cancelled: [],
+};
+
 export async function GET(
   request: NextRequest,
   { params }: RouteContext
@@ -46,11 +53,12 @@ export async function GET(
   }
 }
 
-// PUT /api/orders/:id
 export async function PUT(
   request: NextRequest,
   { params }: RouteContext
 ) {
+  const session = await mongoose.startSession();
+
   try {
     const { id } = await params;
 
@@ -61,40 +69,89 @@ export async function PUT(
       );
     }
 
-    await connectDB();
-
     const body = await request.json();
 
-    const order = await Order.findByIdAndUpdate(
-      id,
-      body,
-      {
-        new: true,
-        runValidators: true,
-      }
-    )
-      .populate("customer", "name phone email")
-      .populate("items.product", "name price");
-
-    if (!order) {
+    if (!body.status) {
       return NextResponse.json(
-        { message: "Order not found" },
-        { status: 404 }
+        { message: "Status is required" },
+        { status: 400 }
       );
     }
 
-    return NextResponse.json(order);
+    const validStatuses = [
+      "pending",
+      "confirmed",
+      "completed",
+      "cancelled",
+    ];
+
+    if (!validStatuses.includes(body.status)) {
+      return NextResponse.json(
+        { message: "Invalid order status" },
+        { status: 400 }
+      );
+    }
+
+    await connectDB();
+
+    let updatedOrder;
+
+    await session.withTransaction(async () => {
+      const order = await Order.findById(id).session(session);
+
+      if (!order) {
+        throw new Error("Order not found");
+      }
+
+      if (order.status === body.status) {
+        throw new Error("Order already has this status");
+      }
+
+      if (!allowedTransitions[order.status]?.includes(body.status)) {
+        throw new Error(
+          `Cannot change order from ${order.status} to ${body.status}`
+        );
+      }
+
+      // If an order is cancelled, return its products to inventory.
+      if (body.status === "cancelled") {
+        for (const item of order.items) {
+          await Product.findByIdAndUpdate(
+            item.product,
+            {
+              $inc: { stock: item.quantity },
+            },
+            { session }
+          );
+        }
+      }
+
+      order.status = body.status;
+      updatedOrder = await order.save({ session });
+    });
+
+    const populatedOrder = await Order.findById(updatedOrder!._id)
+      .populate("customer", "name phone email")
+      .populate("items.product", "name price");
+
+    return NextResponse.json(populatedOrder);
   } catch (error) {
     console.error("PUT order error:", error);
 
     return NextResponse.json(
-      { message: "Failed to update order" },
-      { status: 500 }
+      {
+        message:
+          error instanceof Error
+            ? error.message
+            : "Failed to update order",
+      },
+      { status: 400 }
     );
+  } finally {
+    await session.endSession();
   }
 }
 
-// DELETE /api/orders/:id
 export async function DELETE(
   request: NextRequest,
   { params }: RouteContext

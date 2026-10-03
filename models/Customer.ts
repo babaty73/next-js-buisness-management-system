@@ -1,4 +1,4 @@
-import mongoose, { Model, Schema } from "mongoose";
+import mongoose, { Schema, models, Model } from "mongoose";
 
 export interface ICustomer {
   name: string;
@@ -14,16 +14,19 @@ const customerSchema = new Schema<ICustomer>(
       required: true,
       trim: true,
     },
+
     email: {
       type: String,
       trim: true,
       lowercase: true,
     },
+
     phone: {
       type: String,
       required: true,
       trim: true,
     },
+
     address: {
       type: String,
       trim: true,
@@ -35,7 +38,7 @@ const customerSchema = new Schema<ICustomer>(
 );
 
 const Customer: Model<ICustomer> =
-  (mongoose.models.Customer as Model<ICustomer>) ||
+  (models.Customer as Model<ICustomer>) ||
   mongoose.model<ICustomer>("Customer", customerSchema);
 
 export default Customer;
