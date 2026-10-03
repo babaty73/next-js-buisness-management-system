@@ -1,4 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
+import mongoose from "mongoose";
+import Product from "@/models/Product";
+import { connectDB } from "@/lib/db";
 import { getInventory } from "@/services/inventoryService";
 
 export async function GET() {
@@ -22,24 +25,49 @@ export async function PUT(request: NextRequest) {
 
     const { productId, quantity } = body;
 
-    if (!productId) {
+    if (!productId || !mongoose.isValidObjectId(productId)) {
       return NextResponse.json(
-        { message: "Product ID is required" },
+        { message: "Valid product ID is required" },
         { status: 400 }
       );
     }
 
-    if (!Number.isInteger(quantity)) {
+    if (!Number.isInteger(quantity) || quantity === 0) {
       return NextResponse.json(
-        { message: "Quantity must be an integer" },
+        { message: "Quantity must be a non-zero integer" },
         { status: 400 }
       );
     }
 
-    return NextResponse.json(
-      { message: "Inventory adjustment endpoint ready" },
-      { status: 200 }
-    );
+    await connectDB();
+
+    const product = await Product.findOneAndUpdate(
+      {
+        _id: productId,
+        ...(quantity < 0 ? { stock: { $gte: Math.abs(quantity) } } : {}),
+      },
+      {
+        $inc: { stock: quantity },
+      },
+      {
+        new: true,
+        runValidators: true,
+      }
+    ).select("name category price stock");
+
+    if (!product) {
+      return NextResponse.json(
+        {
+          message:
+            quantity < 0
+              ? "Insufficient stock"
+              : "Product not found",
+        },
+        { status: 400 }
+      );
+    }
+
+    return NextResponse.json(product);
   } catch (error) {
     console.error("Failed to adjust inventory:", error);
 
