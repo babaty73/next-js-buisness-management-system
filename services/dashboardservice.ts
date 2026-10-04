@@ -1,5 +1,6 @@
-import Order from "@/models/Order";
 import Product from "@/models/Product";
+import Order from "@/models/Order";
+import Customer from "@/models/Customer";
 import { connectDB } from "@/lib/db";
 
 export async function getDashboardStats() {
@@ -55,13 +56,14 @@ export async function getDashboardStats() {
     ]),
 
     Order.find()
-      .populate({
-        path: "customer",
-        select: "name phone",
-      })
-      .sort({ createdAt: -1 })
-      .limit(5)
-      .lean(),
+  .populate({
+    path: "customer",
+    select: "name phone",
+    model: Customer,
+  })
+  .sort({ createdAt: -1 })
+  .limit(5)
+  .lean()
   ]);
 
   const totalRevenue = revenueResult[0]?.total ?? 0;

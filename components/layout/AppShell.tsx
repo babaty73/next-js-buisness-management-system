@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Menu, X, Bell, LayoutDashboard, Package, Users, ShoppingCart, Boxes, Settings } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import ThemeToggle from "@/components/layout/ThemeToggle";
 
 const navigation = [
   { name: "Dashboard", href: "/", icon: LayoutDashboard },
@@ -82,6 +83,7 @@ export default function AppShell({
             <button className="rounded-lg p-2 text-gray-500 hover:bg-gray-100">
               <Bell size={20} />
             </button>
+             <ThemeToggle />
 
             <div className="flex items-center gap-3 border-l border-gray-200 pl-4">
               <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gray-900 text-sm font-semibold text-white">

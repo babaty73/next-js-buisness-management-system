@@ -20,7 +20,7 @@ export default async function DashboardPage() {
   const stats = await getDashboardStats();
 
   return (
-    <main className="min-h-screen bg-gray-50 p-6 md:p-10">
+    <main className="min-h-screen bg-gray-50 p-6 text-gray-900 dark:bg-gray-900 dark:text-white md:p-10">
       <div className="mx-auto max-w-7xl">
         {/* Header */}
         <div className="mb-8">
@@ -46,8 +46,8 @@ export default async function DashboardPage() {
             </p>
           </div>
 
-          <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-            <p className="text-sm font-medium text-gray-500">
+          <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+            <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
               Total Orders
             </p>
             <p className="mt-2 text-2xl font-bold text-gray-900">
